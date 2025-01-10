@@ -2634,6 +2634,7 @@ public class ImageReceiver implements NotificationCenter.NotificationCenterDeleg
     }
 
     public void startAnimation() {
+        Log.e("HUTAO", "ImgRecv#startAnimation");
         AnimatedFileDrawable animation = getAnimation();
         if (animation != null) {
             animation.setUseSharedQueue(useSharedAnimationQueue);

@@ -76,6 +76,7 @@ import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.ImageSpan;
 import android.text.style.URLSpan;
+import android.util.Log;
 import android.util.Pair;
 import android.util.Property;
 import android.util.SparseArray;
@@ -31106,6 +31107,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
     }
 
     public void restartSticker(ChatMessageCell cell) {
+        Log.e("HUTAO", "restartSticker: 0");
         MessageObject message = cell.getMessageObject();
         TLRPC.Document document = message.getDocument();
         if (!message.isAnimatedAnimatedEmoji()) {
@@ -31115,6 +31117,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             ImageReceiver imageReceiver = cell.getPhotoImage();
             RLottieDrawable drawable = imageReceiver.getLottieAnimation();
             if (drawable != null) {
+                Log.e("HUTAO", "restartSticker: anim start");
                 drawable.restart();
             }
         }
@@ -37595,6 +37598,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
 
         @Override
         public void didPressImage(ChatMessageCell cell, float x, float y) {
+            Log.e("HUTAO", "didPressImage: 0");
             MessageObject message = cell.getMessageObject();
             if (message.type == MessageObject.TYPE_STORY) {
                 if (message.messageOwner.media.storyItem != null && !(message.messageOwner.media.storyItem instanceof TL_stories.TL_storyItemDeleted)) {
@@ -37632,7 +37636,8 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                         getSendMessagesHelper().sendMessage(params);
                     }
                 });
-            } else if (message.isAnimatedEmoji() && (!message.isAnimatedAnimatedEmoji() || emojiAnimationsOverlay.supports(MessageObject.findAnimatedEmojiEmoticon(message.getDocument())) && currentUser != null) || message.isPremiumSticker()) {
+            }
+            else if (message.isAnimatedEmoji() && (!message.isAnimatedAnimatedEmoji() || emojiAnimationsOverlay.supports(MessageObject.findAnimatedEmojiEmoticon(message.getDocument())) && currentUser != null) || message.isPremiumSticker()) {
                 restartSticker(cell);
                 emojiAnimationsOverlay.onTapItem(cell, ChatActivity.this, true);
                 chatListView.cancelClickRunnables(false);
