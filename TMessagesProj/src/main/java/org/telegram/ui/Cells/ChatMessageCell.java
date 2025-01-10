@@ -1940,7 +1940,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
     }
 
     private boolean checkTextBlockMotionEvent(MotionEvent event) {
-        Log.e("HUTAO","checkTextBlockMotionEvent 0");
+//        Log.e("HUTAO","checkTextBlockMotionEvent 0");
         if (!(currentMessageObject.type == MessageObject.TYPE_TEXT
                 || currentMessageObject.type == MessageObject.TYPE_EMOJIS
                 || currentMessageObject.type == MessageObject.TYPE_STORY_MENTION)
@@ -1948,11 +1948,11 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
             return false;
         }
         if (event.getAction() == MotionEvent.ACTION_DOWN || event.getAction() == MotionEvent.ACTION_UP && (pressedLinkType == 1 || pressedCopyCode != null)) {
-            Log.e("HUTAO","checkTextBlockMotionEvent b11");
+//            Log.e("HUTAO","checkTextBlockMotionEvent b11");
             int x = (int) event.getX();
             int y = (int) event.getY();
             if (x >= textX && y >= textY && x <= textX + currentMessageObject.textWidth && y <= textY + currentMessageObject.textHeight(transitionParams)) {
-                Log.e("HUTAO","checkTextBlockMotionEvent b111");
+//                Log.e("HUTAO","checkTextBlockMotionEvent b111");
                 y -= textY;
                 int blockNum = 0;
                 for (int a = 0; a < currentMessageObject.textLayoutBlocks.size(); a++) {
@@ -2105,12 +2105,12 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                 }
             }
             else {
-                Log.e("HUTAO","checkTextBlockMotionEvent b112");
+//                Log.e("HUTAO","checkTextBlockMotionEvent b112");
                 resetPressedLink(1);
             }
         }
         else if (event.getAction() == MotionEvent.ACTION_UP) {
-            Log.e("HUTAO","checkTextBlockMotionEvent b12");
+//            Log.e("HUTAO","checkTextBlockMotionEvent b12");
             pressedCopyCode = null;
             resetCodeSelectors();
         }
@@ -2170,7 +2170,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
             }
         }
         else if (event.getAction() == MotionEvent.ACTION_CANCEL) {
-            Log.e("HUTAO","checkTextBlockMotionEvent b22");
+//            Log.e("HUTAO","checkTextBlockMotionEvent b22");
 
             for (int a = 0; a < currentMessageObject.textLayoutBlocks.size(); a++) {
                 MessageObject.TextLayoutBlock block = currentMessageObject.textLayoutBlocks.get(a);
@@ -15849,12 +15849,12 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
 
     @Override
     public void onAnimationReady(ImageReceiver imageReceiver) {
-        Log.e("HUTAO1", "onAnimationReady: ");
-        StackTraceElement[] elements = Thread.currentThread().getStackTrace();
-        for (int i = 1; i < elements.length; i++) {
-            StackTraceElement s = elements[i];
-            Log.e("HUTAO1", "\tat " + s.getClassName() + "." + s.getMethodName() + "(" + s.getFileName() + ":" + s.getLineNumber() + ")");
-        }
+//        Log.e("HUTAO1", "onAnimationReady: ");
+//        StackTraceElement[] elements = Thread.currentThread().getStackTrace();
+//        for (int i = 1; i < elements.length; i++) {
+//            StackTraceElement s = elements[i];
+//            Log.e("HUTAO1", "\tat " + s.getClassName() + "." + s.getMethodName() + "(" + s.getFileName() + ":" + s.getLineNumber() + ")");
+//        }
         if (currentMessageObject != null && imageReceiver == photoImage && currentMessageObject.isAnimatedSticker()) {
             delegate.setShouldNotRepeatSticker(currentMessageObject);
         }
