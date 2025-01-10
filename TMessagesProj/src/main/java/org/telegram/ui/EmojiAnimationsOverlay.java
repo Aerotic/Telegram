@@ -2,6 +2,7 @@ package org.telegram.ui;
 
 import android.graphics.Canvas;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.HapticFeedbackConstants;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -235,6 +236,7 @@ public class EmojiAnimationsOverlay implements NotificationCenter.NotificationCe
     }
 
     private void findViewAndShowAnimation(int messageId, int animation) {
+//        Log.e("HUTAO", "findViewAndShowAnimation: ");
         if (!attached) {
             return;
         }
