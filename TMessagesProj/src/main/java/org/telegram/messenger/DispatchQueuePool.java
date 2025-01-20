@@ -1,6 +1,7 @@
 package org.telegram.messenger;
 
 import android.os.SystemClock;
+import android.os.Trace;
 import android.util.SparseIntArray;
 
 import androidx.annotation.UiThread;
@@ -52,6 +53,7 @@ public class DispatchQueuePool {
 
     @UiThread
     public void execute(Runnable runnable) {
+        Trace.beginSection("DispatchQueuePool#execute");
         DispatchQueue queue;
         if (!busyQueues.isEmpty() && (totalTasksCount / 2 <= busyQueues.size() || queues.isEmpty() && createdCount >= maxCount)) {
             queue = busyQueues.remove(0);
@@ -76,7 +78,9 @@ public class DispatchQueuePool {
             queue.setPriority(Thread.MAX_PRIORITY);
         }
         queue.postRunnable(() -> {
+            Trace.beginSection("DispatchQueuePool#execute runnable.run");
             runnable.run();
+            Trace.endSection();
             AndroidUtilities.runOnUIThread(() -> {
                 totalTasksCount--;
                 int remainingTasksCount = busyQueuesMap.get(queue.index) - 1;
@@ -89,5 +93,6 @@ public class DispatchQueuePool {
                 }
             });
         });
+        Trace.endSection();
     }
 }
