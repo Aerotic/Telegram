@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
+import android.os.Trace;
 import android.util.Log;
 import android.util.LongSparseArray;
 import android.view.View;
@@ -110,11 +111,13 @@ public class ChatListItemAnimator extends DefaultItemAnimator {
 
         ValueAnimator valueAnimator = ValueAnimator.ofFloat(0, 1f);
         valueAnimator.addUpdateListener(animation -> {
+            Trace.beginSection("ChatListItemAnimator#runPendingAnimations valueAnimator update");
             if (activity != null) {
                 activity.onListItemAnimatorTick();
             } else {
                 recyclerListView.invalidate();
             }
+            Trace.endSection();
         });
         valueAnimator.setDuration(getRemoveDuration() + getMoveDuration());
         valueAnimator.start();
