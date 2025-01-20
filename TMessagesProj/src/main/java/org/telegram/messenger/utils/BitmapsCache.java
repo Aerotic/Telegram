@@ -3,6 +3,7 @@ package org.telegram.messenger.utils;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
+import android.os.Trace;
 
 import com.google.common.util.concurrent.AtomicDouble;
 
@@ -442,13 +443,16 @@ public class BitmapsCache {
     }
 
     public int getFrame(int index, Bitmap bitmap) {
+        Trace.beginSection("BitmapCache#getFrame");
         if (error) {
+            Trace.endSection();
             return FRAME_RESULT_NO_FRAME;
         }
         RandomAccessFile randomAccessFile = null;
         try {
             FrameOffset selectedFrame;
             if (!cacheCreated && !fileExist) {
+                Trace.endSection();
                 return FRAME_RESULT_NO_FRAME;
             }
             byte[] bufferTmp;
@@ -468,12 +472,14 @@ public class BitmapsCache {
                 if (!cacheCreated) {
                     randomAccessFile.close();
                     randomAccessFile = null;
+                    Trace.endSection();
                     return FRAME_RESULT_NO_FRAME;
                 }
             } else {
                 randomAccessFile = cachedFile;
             }
             if (frameOffsets.size() == 0) {
+                Trace.endSection();
                 return FRAME_RESULT_NO_FRAME;
             }
             index = Utilities.clamp(index, frameOffsets.size() - 1, 0);
@@ -498,6 +504,7 @@ public class BitmapsCache {
             options.inBitmap = bitmap;
             BitmapFactory.decodeByteArray(bufferTmp, 0, selectedFrame.frameSize, options);
             options.inBitmap = null;
+            Trace.endSection();
             return FRAME_RESULT_OK;
         } catch (FileNotFoundException e) {
 
@@ -518,6 +525,7 @@ public class BitmapsCache {
         }
 
         // source.getFirstFrame(bitmap);
+        Trace.endSection();
         return FRAME_RESULT_NO_FRAME;
     }
 
