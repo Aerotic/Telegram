@@ -23,6 +23,7 @@ import android.content.Context;
 import android.graphics.PointF;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.os.Trace;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -1612,6 +1613,7 @@ public class LinearLayoutManager extends RecyclerView.LayoutManager implements
      */
     int fill(RecyclerView.Recycler recycler, LayoutState layoutState,
             RecyclerView.State state, boolean stopOnFocusable) {
+        Trace.beginSection("LinearLayoutManager#fill");
         // max offset we should set is mFastScroll + available
         final int start = layoutState.mAvailable;
         if (layoutState.mScrollingOffset != LayoutState.SCROLLING_OFFSET_NaN) {
@@ -1663,6 +1665,7 @@ public class LinearLayoutManager extends RecyclerView.LayoutManager implements
 //        if (DEBUG) {
 //            validateChildOrder();
 //        }
+        Trace.endSection();
         return start - layoutState.mAvailable;
     }
 
