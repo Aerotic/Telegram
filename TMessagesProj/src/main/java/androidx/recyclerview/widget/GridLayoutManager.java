@@ -17,6 +17,7 @@ package androidx.recyclerview.widget;
 
 import android.content.Context;
 import android.graphics.Rect;
+import android.os.Trace;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.SparseIntArray;
@@ -152,6 +153,7 @@ public class GridLayoutManager extends LinearLayoutManager {
 
     @Override
     public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
+        Trace.beginSection("GridLayoutManager#onLayoutChildren");
         if (state.isPreLayout()) {
             cachePreLayoutSpanMapping();
         }
@@ -160,6 +162,7 @@ public class GridLayoutManager extends LinearLayoutManager {
             validateChildOrder();
         }
         clearPreLayoutSpanMappingCache();
+        Trace.endSection();
     }
 
     @Override
