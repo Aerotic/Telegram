@@ -40,6 +40,7 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.SystemClock;
+import android.os.Trace;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.SparseArray;
@@ -663,10 +664,12 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
     private Runnable mItemAnimatorRunner = new Runnable() {
         @Override
         public void run() {
+            Trace.beginSection("RV#mItemAnimatorRunner");
             if (mItemAnimator != null) {
                 mItemAnimator.runPendingAnimations();
             }
             mPostedAnimatorRunner = false;
+            Trace.endSection();
         }
     };
 
@@ -1877,7 +1880,7 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
         startInterceptRequestLayout();
         onEnterLayoutOrScroll();
 
-        TraceCompat.beginSection(TRACE_SCROLL_TAG);
+        Trace.beginSection("RV#scrollStep");
         fillRemainingScrollValues(mState);
 
         int consumedX = 0;
@@ -1889,7 +1892,7 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
             consumedY = mLayout.scrollVerticallyBy(dy, mRecycler, mState);
         }
 
-        TraceCompat.endSection();
+        Trace.endSection();
         repositionShadowingViews();
 
         onExitLayoutOrScroll();
@@ -2425,12 +2428,15 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
      * @see LayoutManager#canScrollHorizontally()
      */
     public boolean fling(int velocityX, int velocityY) {
+        Trace.beginSection("RV#fling");
         if (mLayout == null) {
             Log.e(TAG, "Cannot fling without a LayoutManager set. "
                     + "Call setLayoutManager with a non-null argument.");
+            Trace.endSection();
             return false;
         }
         if (mLayoutSuppressed) {
+            Trace.endSection();
             return false;
         }
 
@@ -2445,6 +2451,7 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
         }
         if (velocityX == 0 && velocityY == 0) {
             // If we don't have any velocity, return false
+            Trace.endSection();
             return false;
         }
 
@@ -2453,6 +2460,7 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
             dispatchNestedFling(velocityX, velocityY, canScroll);
 
             if (mOnFlingListener != null && mOnFlingListener.onFling(velocityX, velocityY)) {
+                Trace.endSection();
                 return true;
             }
 
@@ -2469,9 +2477,11 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
                 velocityX = Math.max(-mMaxFlingVelocity, Math.min(velocityX, mMaxFlingVelocity));
                 velocityY = Math.max(-mMaxFlingVelocity, Math.min(velocityY, mMaxFlingVelocity));
                 mViewFlinger.fling(velocityX, velocityY);
+                Trace.endSection();
                 return true;
             }
         }
+        Trace.endSection();
         return false;
     }
 
@@ -3278,15 +3288,19 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
 
     @Override
     public boolean onTouchEvent(MotionEvent e) {
+        Trace.beginSection("RV#onTouchEvent");
         if (mLayoutSuppressed || mIgnoreMotionEventTillDown) {
+            Trace.endSection();
             return false;
         }
         if (dispatchToOnItemTouchListeners(e)) {
             cancelScroll();
+            Trace.endSection();
             return true;
         }
 
         if (mLayout == null) {
+            Trace.endSection();
             return false;
         }
 
@@ -3419,7 +3433,7 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
             mVelocityTracker.addMovement(vtev);
         }
         vtev.recycle();
-
+        Trace.endSection();
         return true;
     }
 
@@ -3838,20 +3852,28 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
         }
         mState.mIsMeasuring = false;
         if (mState.mLayoutStep == State.STEP_START) {
+            Trace.beginSection("STEP_START dispatchLayoutStep1");
             dispatchLayoutStep1();
+            Trace.endSection();
             mLayout.setExactMeasureSpecsFrom(this);
+            Trace.beginSection("STEP_START dispatchLayoutStep2");
             dispatchLayoutStep2();
+            Trace.endSection();
         } else if (mAdapterHelper.hasUpdates() || mLayout.getWidth() != getWidth()
                 || mLayout.getHeight() != getHeight()) {
             // First 2 steps are done in onMeasure but looks like we have to run again due to
             // changed size.
             mLayout.setExactMeasureSpecsFrom(this);
+            Trace.beginSection("NOT_STEP_START dispatchLayoutStep2");
             dispatchLayoutStep2();
+            Trace.endSection();
         } else {
             // always make sure we sync them (to ensure mode is exact)
             mLayout.setExactMeasureSpecsFrom(this);
         }
+        Trace.beginSection("dispatchLayoutStep3");
         dispatchLayoutStep3();
+        Trace.endSection();
     }
 
     private void saveFocusInfo() {
@@ -4117,7 +4139,9 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
         startInterceptRequestLayout();
         onEnterLayoutOrScroll();
         mState.assertLayoutStep(State.STEP_LAYOUT | State.STEP_ANIMATIONS);
+        Trace.beginSection("RV#dispatchLayoutStep2 consumeUpdatesInOnePass");
         mAdapterHelper.consumeUpdatesInOnePass();
+        Trace.endSection();
         mState.mItemCount = mAdapter.getItemCount();
         mState.mDeletedInvisibleItemCountSincePreviousLayout = 0;
 
@@ -4404,9 +4428,9 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        TraceCompat.beginSection(TRACE_ON_LAYOUT_TAG);
+        Trace.beginSection(TRACE_ON_LAYOUT_TAG);
         dispatchLayout();
-        TraceCompat.endSection();
+        Trace.endSection();
         mFirstLayoutComplete = true;
     }
 
