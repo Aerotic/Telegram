@@ -32290,10 +32290,12 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
     }
 
     public void onListItemAnimatorTick() {
+        Trace.beginSection("ChatActivity#onListItemAnimatorTick");
         invalidateMessagesVisiblePart();
         if (scrimView != null) {
             fragmentView.invalidate();
         }
+        Trace.endSection();
     }
 
     public void setSavedDialog(long savedDialogId) {
@@ -33187,7 +33189,9 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                             if (id == NotificationCenter.messagesDidLoad && (Integer) args[10] == commentsClassGuid) {
                                 openCommentsChat.run();
                                 AndroidUtilities.runOnUIThread(() -> {
+                                    Trace.beginSection("chatActivity.didReceivedNotification id:" + id + " account:" + account);
                                     chatActivity.didReceivedNotification(id, account, args);
+                                    Trace.endSection();
                                 }, 50);
                                 NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.messagesDidLoad);
                             }
@@ -34234,6 +34238,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View view = null;
             if (viewType == 0) {
+                Trace.beginSection("ChatActivity#ChatActivityAdaper#onCreateViewHolder ViewType 0");
                 ArrayList<ChatMessageCell> chatMessagesCache = chatMessageCellsCache.get(currentAccount);
                 if (chatMessagesCache != null && !chatMessagesCache.isEmpty()) {
                     view = chatMessagesCache.get(0);
@@ -34248,7 +34253,9 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 if (currentEncryptedChat == null) {
                     chatMessageCell.setAllowAssistant(true);
                 }
+                Trace.endSection();
             } else if (viewType == 1) {
+                Trace.beginSection("ChatActivity#ChatActivityAdaper#onCreateViewHolder ViewType 1");
                 view = new ChatActionCell(mContext, true, themeDelegate) {
                     @Override
                     public void onInitializeAccessibilityNodeInfo(AccessibilityNodeInfo info) {
@@ -34546,9 +34553,13 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                         return false;
                     }
                 });
+                Trace.endSection();
             } else if (viewType == 2) {
+                Trace.beginSection("ChatActivity#ChatActivityAdaper#onCreateViewHolder ViewType 2");
                 view = new ChatUnreadCell(mContext, themeDelegate);
+                Trace.endSection();
             } else if (viewType == 3) {
+                Trace.beginSection("ChatActivity#ChatActivityAdaper#onCreateViewHolder ViewType 3");
                 view = new BotHelpCell(mContext, themeDelegate);
                 ((BotHelpCell) view).setDelegate(url -> {
                     if (url.startsWith("@")) {
@@ -34566,8 +34577,11 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                         processExternalUrl(0, url, null, null, false, false);
                     }
                 });
+                Trace.endSection();
             } else if (viewType == 4) {
+                Trace.beginSection("ChatActivity#ChatActivityAdaper#onCreateViewHolder ViewType 4");
                 view = new ChatLoadingCell(mContext, contentView, themeDelegate);
+                Trace.endSection();
             }
             view.setLayoutParams(new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT));
             return new RecyclerListView.Holder(view);

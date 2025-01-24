@@ -3480,8 +3480,10 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
     }
 
     private boolean checkPhotoImageMotionEvent(MotionEvent event) {
+        Trace.beginSection("ChatMessageCell#checkPhotoImageMotionEvent");
         Log.e("HUTAO", "checkPhotoImageMotionEvent: 0");
         if (!drawPhotoImage && documentAttachType != DOCUMENT_ATTACH_TYPE_DOCUMENT || currentMessageObject.isSending() && buttonState != 1) {
+            Trace.endSection();
             return false;
         }
 
@@ -3591,6 +3593,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                 }
             }
         }
+        Trace.endSection();
         return result;
     }
 
@@ -4031,25 +4034,31 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        Trace.beginSection("ChatMessageCell#onTouchEvent");
         if (currentMessageObject == null || delegate != null && !delegate.canPerformActions() || animationRunning) {
             if (currentMessageObject != null && currentMessageObject.preview) {
+                Trace.endSection();
                 return checkTextSelection(event);
             } else {
                 boolean r_reply = checkReplyTouchEvent(event);
                 boolean r_text = r_reply || checkTextSelection(event);
+                Trace.endSection();
                 return r_reply || super.onTouchEvent(event);
             }
         }
 
         if (checkTextSelection(event)) {
+            Trace.endSection();
             return true;
         }
 
         if (checkRoundSeekbar(event)) {
+            Trace.endSection();
             return true;
         }
 
         if (checkReactionsTouchEvent(event)) {
+            Trace.endSection();
             return true;
         }
 
@@ -4057,8 +4066,10 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
             if (event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL) {
                 getParent().requestDisallowInterceptTouchEvent(false);
                 videoPlayerRewinder.cancelRewind();
+                Trace.endSection();
                 return false;
             }
+            Trace.endSection();
             return true;
         }
 
@@ -4081,6 +4092,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                 disallowLongPress = true;
             }
         }
+        Trace.beginSection("ChatMessageCell#onTouchEvent many check");
         if(!result) {
             result = checkAdminMotionEvent(event);
             if(result) Log.e("HUTAO", "onTouchEvent: checkAdminMotionEvent true");
@@ -4213,7 +4225,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
             if(result) Log.e("HUTAO", "onTouchEvent: checkReplyTouchEvent true");
 
         }
-
+        Trace.endSection();
         if (event.getAction() == MotionEvent.ACTION_CANCEL) {
             spoilerPressed = null;
             buttonPressed = 0;
@@ -4474,6 +4486,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                 }
             }
         }
+        Trace.endSection();
         return result;
     }
 
