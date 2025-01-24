@@ -59,6 +59,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 import android.os.SystemClock;
+import android.os.Trace;
 import android.os.Vibrator;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
@@ -4123,21 +4124,33 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     .setSpring(new SpringForce(0)
                             .setStiffness(SpringForce.STIFFNESS_MEDIUM)
                             .setDampingRatio(SpringForce.DAMPING_RATIO_NO_BOUNCY))
-                    .addUpdateListener((animation, value, velocity) -> invalidate());
+                    .addUpdateListener((animation, value, velocity) -> {
+                        Trace.beginSection("slidingDrawableVisibilitySpring AnimUpdate");
+                        invalidate();
+                        Trace.endSection();
+                    });
             private FloatValueHolder slidingFillProgress = new FloatValueHolder(0);
             private SpringAnimation slidingFillProgressSpring = new SpringAnimation(slidingFillProgress)
                     .setMinValue(0f)
                     .setSpring(new SpringForce(0)
                             .setStiffness(400f)
                             .setDampingRatio(SpringForce.DAMPING_RATIO_MEDIUM_BOUNCY))
-                    .addUpdateListener((animation, value, velocity) -> invalidate());
+                    .addUpdateListener((animation, value, velocity) -> {
+                        Trace.beginSection("slidingFillProgressSpring AnimUpdate");
+                        invalidate();
+                        Trace.endSection();
+                    });
             private FloatValueHolder slidingOuterRingProgress = new FloatValueHolder(0);
             private SpringAnimation slidingOuterRingSpring = new SpringAnimation(slidingOuterRingProgress)
                     .setMinValue(0f)
                     .setSpring(new SpringForce(0)
                             .setStiffness(200f)
                             .setDampingRatio(SpringForce.DAMPING_RATIO_NO_BOUNCY))
-                    .addUpdateListener((animation, value, velocity) -> invalidate());
+                    .addUpdateListener((animation, value, velocity) -> {
+                        Trace.beginSection("slidingOuterRingSpring AnimUpdate");
+                        invalidate();
+                        Trace.endSection();
+                    });
             private boolean slidingBeyondMax;
             private Path path = new Path();
 
@@ -4454,6 +4467,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             }
 
             private void processTouchEvent(MotionEvent e) {
+                Trace.beginSection("ChatActivity#chatListView#processTouchEvent");
                 if (e != null) {
                     wasManualScroll = true;
                 }
@@ -4480,6 +4494,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                         ) {
                             slidingView.setSlidingOffset(0);
                             slidingView = null;
+                            Trace.endSection();
                             return;
                         }
                         startedTrackingPointerId = e.getPointerId(0);
@@ -4538,10 +4553,12 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     startedTrackingSlidingView = false;
                     chatLayoutManager.setCanScrollVertically(true);
                 }
+                Trace.endSection();
             }
 
             @Override
             public boolean onTouchEvent(MotionEvent e) {
+                Trace.beginSection("ChatActivity#chatListView#onTouchEvent");
                 textSelectionHelper.checkSelectionCancel(e);
                 if (e.getAction() == MotionEvent.ACTION_DOWN) {
                     scrollByTouch = true;
@@ -4608,13 +4625,16 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     }
                 }
                 if (isFastScrollAnimationRunning()) {
+                    Trace.endSection();
                     return false;
                 }
                 boolean result = super.onTouchEvent(e);
                 if (actionBar.isActionModeShowed() || isReport()) {
+                    Trace.endSection();
                     return result;
                 }
                 processTouchEvent(e);
+                Trace.endSection();
                 return startedTrackingSlidingView || result;
             }
 
@@ -5966,6 +5986,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
 
             @Override
             public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
+                Trace.beginSection("ChatActivity#chatLayoputManager#onLayoutChildren");
                 if (BuildVars.DEBUG_PRIVATE_VERSION) {
                     super.onLayoutChildren(recycler, state);
                 } else {
@@ -5976,6 +5997,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                         AndroidUtilities.runOnUIThread(() -> chatAdapter.notifyDataSetChanged(false));
                     }
                 }
+                Trace.endSection();
             }
 
             @Override
@@ -14540,8 +14562,10 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 if (SCROLL_DEBUG_DELAY && inCaseLoading != null) {
                     inCaseLoading.run();
                     AndroidUtilities.runOnUIThread(() -> {
+                        Trace.beginSection("ChatActivity#scrollToLastMessage#runOnUiThread");
                         resetProgressDialogLoading();
                         scroll.run();
+                        Trace.endSection();
                     }, 7500);
                 } else {
                     scroll.run();
