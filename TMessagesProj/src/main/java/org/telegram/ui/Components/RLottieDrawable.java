@@ -22,6 +22,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.Trace;
 import android.text.TextUtils;
 import android.util.JsonReader;
 import android.view.HapticFeedbackConstants;
@@ -154,11 +155,13 @@ public class RLottieDrawable extends BitmapDrawable implements Animatable, Bitma
     protected Runnable uiRunnableNoFrame = new Runnable() {
         @Override
         public void run() {
+            Trace.beginSection("RLottieDrawable#uiRunnableNoFrame");
             loadFrameTask = null;
             decodeFrameFinishedInternal();
             if (onFrameReadyRunnable != null) {
                 onFrameReadyRunnable.run();
             }
+            Trace.endSection();
         }
     };
 
@@ -166,12 +169,14 @@ public class RLottieDrawable extends BitmapDrawable implements Animatable, Bitma
     protected Runnable uiRunnable = new Runnable() {
         @Override
         public void run() {
+            Trace.beginSection("RLottieDrawable#uiRunnable");
             singleFrameDecoded = true;
             invalidateInternal();
             decodeFrameFinishedInternal();
             if (onFrameReadyRunnable != null) {
                 onFrameReadyRunnable.run();
             }
+            Trace.endSection();
         }
     };
 
@@ -180,6 +185,7 @@ public class RLottieDrawable extends BitmapDrawable implements Animatable, Bitma
     private Runnable uiRunnableGenerateCache = new Runnable() {
         @Override
         public void run() {
+            Trace.beginSection("RLottieDrawable#uiRunnableGenerateCache");
             if (!isRecycled && !destroyWhenDone && canLoadFrames() && cacheGenerateTask == null) {
                 generatingCache = true;
                 if (lottieCacheGenerateQueue == null) {
@@ -198,12 +204,14 @@ public class RLottieDrawable extends BitmapDrawable implements Animatable, Bitma
                     uiHandler.post(uiRunnableCacheFinished);
                 });
             }
+            Trace.endSection();
         }
     };
 
     private Runnable uiRunnableCacheFinished = new Runnable() {
         @Override
         public void run() {
+            Trace.beginSection("RLottieDrawable#uiRunnableCacheFinished");
             if (cacheGenerateTask != null) {
                 BitmapsCache.decrementTaskCounter();
                 cacheGenerateTask = null;
@@ -214,6 +222,7 @@ public class RLottieDrawable extends BitmapDrawable implements Animatable, Bitma
                 whenCacheDone.run();
                 whenCacheDone = null;
             }
+            Trace.endSection();
         }
     };
 
@@ -319,7 +328,9 @@ public class RLottieDrawable extends BitmapDrawable implements Animatable, Bitma
 
         @Override
         public void run() {
+            Trace.beginSection("RLottieDrawable#loadFrameRunnable");
             if (isRecycled) {
+                Trace.endSection();
                 return;
             }
             if (!canLoadFrames() || isDice == 2 && secondNativePtr == 0) {
@@ -327,11 +338,14 @@ public class RLottieDrawable extends BitmapDrawable implements Animatable, Bitma
                     frameWaitSync.countDown();
                 }
                 uiHandler.post(uiRunnableNoFrame);
+                Trace.endSection();
                 return;
             }
             if (backgroundBitmap == null) {
                 try {
+                    Trace.beginSection("RLottieDrawable#loadFrameRunnable createBitmap backgroundBitmap");
                     backgroundBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+                    Trace.endSection();
                 } catch (Throwable e) {
                     FileLog.e(e);
                 }
@@ -368,7 +382,9 @@ public class RLottieDrawable extends BitmapDrawable implements Animatable, Bitma
                     final long start = System.currentTimeMillis();
                     if (precache && bitmapsCache != null) {
                         try {
+                            Trace.beginSection("RLottieDrawable#loadFrameRunnable getFrame0");
                             result = bitmapsCache.getFrame(currentFrame / framesPerUpdates, backgroundBitmap);
+                            Trace.endSection();
                             if (!bitmapsCache.needGenCache() && allowDrawFramesWhileCacheGenerating && nativePtr != 0) {
                                 destroy(nativePtr);
                                 nativePtr = 0;
@@ -377,7 +393,9 @@ public class RLottieDrawable extends BitmapDrawable implements Animatable, Bitma
                             FileLog.e(e);
                         }
                     } else {
+                        Trace.beginSection("RLottieDrawable#loadFrameRunnable getFrame1");
                         result = getFrame(ptrToUse, currentFrame, backgroundBitmap, width, height, backgroundBitmap.getRowBytes(), true);
+                        Trace.endSection();
                     }
                     if (bitmapsCache != null && bitmapsCache.needGenCache()) {
                         if (!genCacheSend) {
@@ -386,9 +404,13 @@ public class RLottieDrawable extends BitmapDrawable implements Animatable, Bitma
                         }
                         if (allowDrawFramesWhileCacheGenerating) {
                             if (nativePtr == 0) {
+                                Trace.beginSection("RLottieDrawable#loadFrameRunnable create");
                                 nativePtr = create(args.file.toString(), args.json, width, height, new int[3], false, args.colorReplacement, false, args.fitzModifier);
+                                Trace.endSection();
                             }
+                            Trace.beginSection("RLottieDrawable#loadFrameRunnable getFrame2");
                             result = getFrame(nativePtr, currentFrame, backgroundBitmap, width, height, backgroundBitmap.getRowBytes(), true);
+                            Trace.endSection();
                         } else {
                             result = -1;
                         }
@@ -398,6 +420,7 @@ public class RLottieDrawable extends BitmapDrawable implements Animatable, Bitma
                         if (frameWaitSync != null) {
                             frameWaitSync.countDown();
                         }
+                        Trace.endSection();
                         return;
                     }
 
@@ -432,15 +455,18 @@ public class RLottieDrawable extends BitmapDrawable implements Animatable, Bitma
                                     nextFrameIsLast = false;
                                 } else {
                                     nextFrameIsLast = true;
+                                    Trace.beginSection("RLottieDrawable#nextFrameIsLast0");
                                     checkDispatchOnAnimationEnd();
-                                }
+                                    Trace.endSection();                                }
                             } else {
                                 if (currentFrame + framesPerUpdates < customEndFrame) {
                                     currentFrame += framesPerUpdates;
                                     nextFrameIsLast = false;
                                 } else {
                                     nextFrameIsLast = true;
+                                    Trace.beginSection("RLottieDrawable#nextFrameIsLast1");
                                     checkDispatchOnAnimationEnd();
+                                    Trace.endSection();
                                 }
                             }
                         } else {
@@ -472,7 +498,9 @@ public class RLottieDrawable extends BitmapDrawable implements Animatable, Bitma
                                 }
                             } else {
                                 nextFrameIsLast = true;
+                                Trace.beginSection("RLottieDrawable#nextFrameIsLast2");
                                 checkDispatchOnAnimationEnd();
+                                Trace.endSection();
                             }
                         }
                     }
@@ -484,6 +512,7 @@ public class RLottieDrawable extends BitmapDrawable implements Animatable, Bitma
             if (frameWaitSync != null) {
                 frameWaitSync.countDown();
             }
+            Trace.endSection();
         }
     };
 
@@ -902,12 +931,15 @@ public class RLottieDrawable extends BitmapDrawable implements Animatable, Bitma
     }
 
     public boolean restart(boolean force) {
+        Trace.beginSection("RLottieDrawable#restart");
         if (!force && (autoRepeat < 2 || autoRepeatPlayCount == 0) && autoRepeatCount < 0) {
+            Trace.endSection();
             return false;
         }
         autoRepeatPlayCount = 0;
         autoRepeat = 2;
         start();
+        Trace.endSection();
         return true;
     }
 
@@ -966,10 +998,13 @@ public class RLottieDrawable extends BitmapDrawable implements Animatable, Bitma
     }
 
     protected boolean scheduleNextGetFrame() {
+        Trace.beginSection("RLottieDrawable#scheduleNextGetFrame");
         if (loadFrameTask != null || nextRenderingBitmap != null || !canLoadFrames() || loadingInBackground || destroyWhenDone || !isRunning && (!decodeSingleFrame || decodeSingleFrame && singleFrameDecoded)) {
+            Trace.endSection();
             return false;
         }
         if (generatingCache && !allowDrawFramesWhileCacheGenerating) {
+            Trace.endSection();
             return false;
         }
         if (!newColorUpdates.isEmpty()) {
@@ -986,6 +1021,7 @@ public class RLottieDrawable extends BitmapDrawable implements Animatable, Bitma
         } else {
             loadFrameRunnableQueue.execute(loadFrameTask);
         }
+        Trace.endSection();
         return true;
     }
 
