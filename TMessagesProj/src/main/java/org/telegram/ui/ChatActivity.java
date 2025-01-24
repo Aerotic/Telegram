@@ -31131,7 +31131,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
     }
 
     public void restartSticker(ChatMessageCell cell) {
-        Log.e("HUTAO", "restartSticker: 0");
+//        Log.e("HUTAO", "restartSticker: 0");
         MessageObject message = cell.getMessageObject();
         TLRPC.Document document = message.getDocument();
         if (!message.isAnimatedAnimatedEmoji()) {
@@ -31141,7 +31141,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             ImageReceiver imageReceiver = cell.getPhotoImage();
             RLottieDrawable drawable = imageReceiver.getLottieAnimation();
             if (drawable != null) {
-                Log.e("HUTAO", "restartSticker: anim start");
+//                Log.e("HUTAO", "restartSticker: anim start");
                 drawable.restart();
             }
         }
