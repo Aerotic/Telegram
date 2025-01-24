@@ -51,6 +51,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.os.Trace;
 import android.text.Layout;
 import android.text.Spannable;
 import android.text.SpannableString;
