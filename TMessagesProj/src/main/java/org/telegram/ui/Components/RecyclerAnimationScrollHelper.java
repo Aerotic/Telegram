@@ -3,6 +3,7 @@ package org.telegram.ui.Components;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
+import android.os.Trace;
 import android.util.SparseArray;
 import android.view.View;
 
@@ -51,17 +52,21 @@ public class RecyclerAnimationScrollHelper {
     }
 
     public void scrollToPosition(int position, int offset, final boolean bottom, boolean smooth) {
+        Trace.beginSection("RecyclerAnimationScrollHelper#scrollToPosition");
         if (recyclerView.fastScrollAnimationRunning || (recyclerView.getItemAnimator() != null && recyclerView.getItemAnimator().isRunning())) {
+            Trace.endSection();
             return;
         }
         if (!smooth || scrollDirection == SCROLL_DIRECTION_UNSET) {
             layoutManager.scrollToPositionWithOffset(position, offset, bottom);
+            Trace.endSection();
             return;
         }
 
         int n = recyclerView.getChildCount();
         if (n == 0 || !MessagesController.getGlobalMainSettings().getBoolean("view_animations", true)) {
             layoutManager.scrollToPositionWithOffset(position, offset, bottom);
+            Trace.endSection();
             return;
         }
 
@@ -120,6 +125,7 @@ public class RecyclerAnimationScrollHelper {
         recyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
             public void onLayoutChange(View v, int l, int t, int r, int b, int ol, int ot, int or, int ob) {
+                Trace.beginSection("RecyclerAnimationScrollHelper#onLayoutChange");
                 recyclerView.removeOnLayoutChangeListener(this);
                 final ArrayList<View> incomingViews = new ArrayList<>();
 
@@ -332,8 +338,10 @@ public class RecyclerAnimationScrollHelper {
                     animator.setInterpolator(CubicBezierInterpolator.EASE_OUT_QUINT);
                 }
                 animator.start();
+                Trace.endSection();
             }
         });
+        Trace.endSection();
     }
 
     public void cancel() {
