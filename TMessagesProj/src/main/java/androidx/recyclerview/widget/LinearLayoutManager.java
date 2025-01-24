@@ -1627,13 +1627,15 @@ public class LinearLayoutManager extends RecyclerView.LayoutManager implements
         LayoutChunkResult layoutChunkResult = mLayoutChunkResult;
         while ((layoutState.mInfinite || remainingSpace > 0) && layoutState.hasMore(state)) {
             layoutChunkResult.resetInternal();
-            if (RecyclerView.VERBOSE_TRACING) {
-                TraceCompat.beginSection("LLM LayoutChunk");
-            }
+//            if (RecyclerView.VERBOSE_TRACING) {
+//                TraceCompat.beginSection("LLM LayoutChunk");
+//            }
+            Trace.beginSection("LLM LayoutChunk");
             layoutChunk(recycler, state, layoutState, layoutChunkResult);
-            if (RecyclerView.VERBOSE_TRACING) {
-                TraceCompat.endSection();
-            }
+            Trace.endSection();
+//            if (RecyclerView.VERBOSE_TRACING) {
+//                TraceCompat.endSection();
+//            }
             if (layoutChunkResult.mFinished) {
                 break;
             }
@@ -1671,7 +1673,9 @@ public class LinearLayoutManager extends RecyclerView.LayoutManager implements
 
     void layoutChunk(RecyclerView.Recycler recycler, RecyclerView.State state,
             LayoutState layoutState, LayoutChunkResult result) {
+        Trace.beginSection("LinearLayoutManager#layoutChunk layoutState.next");
         View view = layoutState.next(recycler);
+        Trace.endSection();
         if (view == null) {
             if (DEBUG && layoutState.mScrapList == null) {
                 throw new RuntimeException("received null view when unexpected");
@@ -1682,6 +1686,7 @@ public class LinearLayoutManager extends RecyclerView.LayoutManager implements
             return;
         }
         RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) view.getLayoutParams();
+        Trace.beginSection("LinearLayoutManager#layoutChunk addView");
         if (layoutState.mScrapList == null) {
             if (mShouldReverseLayout == (layoutState.mLayoutDirection
                     == LayoutState.LAYOUT_START)) {
@@ -1697,7 +1702,10 @@ public class LinearLayoutManager extends RecyclerView.LayoutManager implements
                 addDisappearingView(view, 0);
             }
         }
+        Trace.endSection();
+        Trace.beginSection("LinearLayoutManager#layoutChunk measureChildWithMargins");
         measureChildWithMargins(view, 0, 0);
+        Trace.endSection();
         result.mConsumed = mOrientationHelper.getDecoratedMeasurement(view);
         int left, top, right, bottom;
         if (mOrientation == VERTICAL) {
@@ -1729,7 +1737,9 @@ public class LinearLayoutManager extends RecyclerView.LayoutManager implements
         }
         // We calculate everything with View's bounding box (which includes decor and margins)
         // To calculate correct layout position, we subtract margins.
+        Trace.beginSection("LinearLayoutManager#layoutChunk layoutDecoratedWithMargins");
         layoutDecoratedWithMargins(view, left, top, right, bottom);
+        Trace.endSection();
         if (DEBUG) {
             Log.d(TAG, "laid out child at position " + getPosition(view) + ", with l:"
                     + (left + params.leftMargin) + ", t:" + (top + params.topMargin) + ", r:"
