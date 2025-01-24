@@ -110,6 +110,7 @@ JNIEXPORT jlong Java_org_telegram_ui_Components_RLottieDrawable_create(JNIEnv *e
     info->frameCount = info->animation->totalFrame();
     info->fps = (int) info->animation->frameRate();
     info->limitFps = limitFps;
+    LOGE("HUTAO info->frameCount %d, info->fps %d, ",info->frameCount, info->fps);
     if (info->fps > 60 || info->frameCount > 600) {
         delete info;
         return 0;
