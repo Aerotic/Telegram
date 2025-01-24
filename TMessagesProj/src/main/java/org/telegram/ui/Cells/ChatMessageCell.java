@@ -1968,7 +1968,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                     y -= block.textYOffset(currentMessageObject.textLayoutBlocks, transitionParams);
 
                     if (!block.quote && block.code && x > 0 && x <= currentMessageObject.textWidth && y >= block.padTop + block.height + block.padBottom - dp(38) && y <= block.padTop + block.height + block.padBottom) {
-                        Log.e("HUTAO","checkTextBlockMotionEvent b1111");
+//                        Log.e("HUTAO","checkTextBlockMotionEvent b1111");
                         if (event.getAction() == MotionEvent.ACTION_UP) {
                             if (block == pressedCopyCode && delegate != null) {
                                 delegate.didPressCodeCopy(this, block);
@@ -2085,7 +2085,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                             } else {
                                 if (link[0] instanceof AnimatedEmojiSpan && pressedEmoji == link[0]) {
                                     boolean did = delegate.didPressAnimatedEmoji(this, pressedEmoji);
-                                    Log.e("HUTAO","delegate.didPressAnimatedEmoji "+did);
+//                                    Log.e("HUTAO","delegate.didPressAnimatedEmoji "+did);
                                     if (did) {
                                         resetPressedLink(1);
                                         pressedEmoji = null;
@@ -2116,16 +2116,16 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
             resetCodeSelectors();
         }
         if (event.getAction() == MotionEvent.ACTION_DOWN || event.getAction() == MotionEvent.ACTION_UP) {
-            Log.e("HUTAO","checkTextBlockMotionEvent b21");
+//            Log.e("HUTAO","checkTextBlockMotionEvent b21");
             int x = (int) event.getX();
             int y = (int) event.getY();
             if (pressedLink == null && x >= textX && y >= textY && x <= textX + currentMessageObject.textWidth && y <= textY + currentMessageObject.textHeight(transitionParams)) {
-                Log.e("HUTAO","checkTextBlockMotionEvent b211");
+//                Log.e("HUTAO","checkTextBlockMotionEvent b211");
                 y -= textY;
                 for (int a = 0; a < currentMessageObject.textLayoutBlocks.size(); a++) {
                     MessageObject.TextLayoutBlock block = currentMessageObject.textLayoutBlocks.get(a);
                     if (block.quoteCollapse && block.collapsedHeight < block.height && y >= block.textYOffset(currentMessageObject.textLayoutBlocks, transitionParams) && y < block.textYOffset(currentMessageObject.textLayoutBlocks, transitionParams) + block.padTop + block.height(transitionParams) + block.padBottom) {
-                        Log.e("HUTAO","checkTextBlockMotionEvent b2111");
+//                        Log.e("HUTAO","checkTextBlockMotionEvent b2111");
                         pressedBlock = a;
                         if (block.collapsedBounce == null || block.collapsedBounce.getView() != this) {
                             block.collapsedBounce = new ButtonBounce(this);
@@ -2136,9 +2136,9 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                 }
             }
             if (event.getAction() == MotionEvent.ACTION_UP) {
-                Log.e("HUTAO","checkTextBlockMotionEvent b212");
+//                Log.e("HUTAO","checkTextBlockMotionEvent b212");
                 if (pressedBlock != -1) {
-                    Log.e("HUTAO","checkTextBlockMotionEvent b2121");
+//                    Log.e("HUTAO","checkTextBlockMotionEvent b2121");
                     for (int a = 0; a < currentMessageObject.textLayoutBlocks.size(); a++) {
                         MessageObject.TextLayoutBlock block = currentMessageObject.textLayoutBlocks.get(a);
                         if (a == pressedBlock && !transitionParams.animateExpandedQuotes) {
@@ -3482,7 +3482,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
 
     private boolean checkPhotoImageMotionEvent(MotionEvent event) {
         Trace.beginSection("ChatMessageCell#checkPhotoImageMotionEvent");
-        Log.e("HUTAO", "checkPhotoImageMotionEvent: 0");
+//        Log.e("HUTAO", "checkPhotoImageMotionEvent: 0");
         if (!drawPhotoImage && documentAttachType != DOCUMENT_ATTACH_TYPE_DOCUMENT || currentMessageObject.isSending() && buttonState != 1) {
             Trace.endSection();
             return false;
@@ -3493,7 +3493,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
 
         boolean result = false;
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            Log.e("HUTAO", "checkPhotoImageMotionEvent: b1");
+//            Log.e("HUTAO", "checkPhotoImageMotionEvent: b1");
             boolean area2 = false;
             int side = AndroidUtilities.dp(48);
 
@@ -3521,7 +3521,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                         result = true;
                     }
                 } else if (!currentMessageObject.isAnyKindOfSticker() || currentMessageObject.getInputStickerSet() != null || currentMessageObject.isAnimatedEmoji() || currentMessageObject.isDice()) {
-                    Log.e("HUTAO", "checkPhotoImageMotionEvent: b11");
+//                    Log.e("HUTAO", "checkPhotoImageMotionEvent: b11");
                     if (x >= photoImage.getImageX() && x <= photoImage.getImageX() + photoImage.getImageWidth() && y >= photoImage.getImageY() && y <= photoImage.getImageY() + photoImage.getImageHeight()) {
                         if (isRoundVideo) {
                             if ((x - photoImage.getCenterX()) * (x - photoImage.getCenterX()) + (y - photoImage.getCenterY()) * (y - photoImage.getCenterY()) < (photoImage.getImageWidth() / 2f) * (photoImage.getImageWidth() / 2)) {
@@ -3556,7 +3556,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                 }
             }
         } else {
-            Log.e("HUTAO", "checkPhotoImageMotionEvent: b2");
+//            Log.e("HUTAO", "checkPhotoImageMotionEvent: b2");
             if (event.getAction() == MotionEvent.ACTION_UP) {
                 if (videoButtonPressed == 1) {
                     videoButtonPressed = 0;
@@ -3567,7 +3567,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                     buttonPressed = 0;
                     playSoundEffect(SoundEffectConstants.CLICK);
                     if (drawVideoImageButton) {
-                        Log.e("HUTAO", "checkPhotoImageMotionEvent: b21");
+//                        Log.e("HUTAO", "checkPhotoImageMotionEvent: b21");
                         didClickedImage();
                     } else {
                         didPressButton(true, false);
@@ -3580,13 +3580,13 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                     invalidate();
                 } else if (imagePressed) {
                     imagePressed = false;
-                    Log.e("HUTAO", "checkPhotoImageMotionEvent: b22");
+//                    Log.e("HUTAO", "checkPhotoImageMotionEvent: b22");
                     if (buttonState == -1 || buttonState == 1 && isRoundVideo || buttonState == 2 || buttonState == 3 || drawVideoImageButton) {
-                        Log.e("HUTAO", "checkPhotoImageMotionEvent: b221");
+//                        Log.e("HUTAO", "checkPhotoImageMotionEvent: b221");
                         playSoundEffect(SoundEffectConstants.CLICK);
                         didClickedImage();
                     } else if (buttonState == 0) {
-                        Log.e("HUTAO", "checkPhotoImageMotionEvent: b222");
+//                        Log.e("HUTAO", "checkPhotoImageMotionEvent: b222");
                         playSoundEffect(SoundEffectConstants.CLICK);
                         didPressButton(true, false);
                     }
@@ -5610,7 +5610,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
     }
 
     private void setMessageContent(MessageObject messageObject, MessageObject.GroupedMessages groupedMessages, boolean bottomNear, boolean topNear) {
-        Log.e("HUTAO","ChatMsgCell#setMessageContent");
+//        Log.e("HUTAO","ChatMsgCell#setMessageContent");
 //        StackTraceElement[] elements = Thread.currentThread().getStackTrace();
 //        for (int i = 1; i < elements.length; i++) {
 //            StackTraceElement s = elements[i];
@@ -5648,7 +5648,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
             if (messageObject.isWebpage()) type.append("isWebpage ");
             if (messageObject.isNewGif()) type.append("isNewGif ");
             if (messageObject.isAndroidTheme()) type.append("isAndroidTheme ");
-            Log.e("HUTAO","ChatMsgCell#setMessageContent messageObject.type " + messageObject.type + "    Msg Type: " + type);
+//            Log.e("HUTAO","ChatMsgCell#setMessageContent messageObject.type " + messageObject.type + "    Msg Type: " + type);
 
         }
         if (messageObject.checkLayout() || currentPosition != null && lastHeight != AndroidUtilities.displaySize.y) {
@@ -8688,19 +8688,19 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                     } else if (messageObject.isAnimatedEmoji()) {
                         if (!LiteMode.isEnabled(LiteMode.FLAG_ANIMATED_EMOJI_CHAT)) {
                             filter = String.format(Locale.US, "%d_%d_nr_messageId=%d" + messageObject.emojiAnimatedStickerColor, w, h, messageObject.stableId);
-                            Log.e("HUTAO"," branch !LiteMode.isEnabled(LiteMode.FLAG_ANIMATED_EMOJI_CHAT)");
+//                            Log.e("HUTAO"," branch !LiteMode.isEnabled(LiteMode.FLAG_ANIMATED_EMOJI_CHAT)");
                             thumb = DocumentObject.getCircleThumb(.4f, Theme.key_chat_serviceBackground, resourcesProvider, 0.65f);
                             photoImage.setAutoRepeat(3);
                             messageObject.loadAnimatedEmojiDocument();
                         } else if (messageObject.emojiAnimatedSticker == null && messageObject.emojiAnimatedStickerId != null) {
                             filter = String.format(Locale.US, "%d_%d_nr_messageId=%d" + messageObject.emojiAnimatedStickerColor, w, h, messageObject.stableId);
-                            Log.e("HUTAO","messageObject.emojiAnimatedSticker == null && messageObject.emojiAnimatedStickerId != null");
+//                            Log.e("HUTAO","messageObject.emojiAnimatedSticker == null && messageObject.emojiAnimatedStickerId != null");
                             thumb = DocumentObject.getCircleThumb(.4f, Theme.key_chat_serviceBackground, resourcesProvider, 0.65f);
                             photoImage.setAutoRepeat(1);
                             messageObject.loadAnimatedEmojiDocument();
                         } else {
                             filter = String.format(Locale.US, "%d_%d_nr_messageId=%d" + messageObject.emojiAnimatedStickerColor, w, h, messageObject.stableId);
-                            Log.e("HUTAO","else");
+//                            Log.e("HUTAO","else");
                             if (MessageObject.isAnimatedEmoji(messageObject.emojiAnimatedSticker)) {
                                 photoImage.setAutoRepeat(1);
                             } else {
@@ -9311,7 +9311,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                         }
                     } else if (autoPlayingMedia) {
                         photoImage.setAllowStartAnimation(true);
-                        Log.e("HUTAO", "setMessageContent: autoPlayingMedia");
+//                        Log.e("HUTAO", "setMessageContent: autoPlayingMedia");
                         photoImage.startAnimation();
                         TLRPC.Document document = messageObject.getDocument();
                         if (messageObject.hasVideoQualities()) {
@@ -9949,7 +9949,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                 }
                 photoImage.setRoundRadius(tl, tr, br, bl);
             }
-            Log.e("HUTAO","updateAnimatedEmojis");
+//            Log.e("HUTAO","updateAnimatedEmojis");
             updateAnimatedEmojis();
             if (stickerSetIcons != null && stickerSetIcons.die()) {
                 stickerSetIcons.detach(this);

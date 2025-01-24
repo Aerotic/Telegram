@@ -2189,15 +2189,33 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 AndroidUtilities.requestAdjustResize(getParentActivity(), classGuid);
             }
             if (mentionContainer != null) {
-                mentionContainer.animate().alpha(chatActivityEnterView.isStickersExpanded() || isInPreviewMode() ? 0 : 1f).setInterpolator(CubicBezierInterpolator.DEFAULT).start();
+                ViewPropertyAnimator anim = mentionContainer.animate().alpha(chatActivityEnterView.isStickersExpanded() || isInPreviewMode() ? 0 : 1f).setInterpolator(CubicBezierInterpolator.DEFAULT);
+                View view = (View) mentionContainer;
+                Log.e("HUTAO", view.getClass().getName() + " " + view.getLayerType() + " mentionContainer");
+                anim.setUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                    @Override
+                    public void onAnimationUpdate(@NonNull ValueAnimator animation) {
+                        Log.e("HUTAO", view.getClass().getName() + " " + view.getLayerType() + " mentionContainer");
+                    }
+                });
+                anim.start();
             }
             if (suggestEmojiPanel != null) {
                 suggestEmojiPanel.setVisibility(View.VISIBLE);
-                suggestEmojiPanel.animate().alpha(chatActivityEnterView.isStickersExpanded() || isInPreviewMode() ? 0 : 1f).setInterpolator(CubicBezierInterpolator.DEFAULT).withEndAction(() -> {
+                ViewPropertyAnimator anim = suggestEmojiPanel.animate().alpha(chatActivityEnterView.isStickersExpanded() || isInPreviewMode() ? 0 : 1f).setInterpolator(CubicBezierInterpolator.DEFAULT).withEndAction(() -> {
                     if (suggestEmojiPanel != null && chatActivityEnterView.isStickersExpanded()) {
                         suggestEmojiPanel.setVisibility(View.GONE);
                     }
-                }).start();
+                });
+                View view = (View) suggestEmojiPanel;
+                Log.e("HUTAO", view.getClass().getName() + " " + view.getLayerType() + " suggestEmojiPanel");
+                anim.setUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                    @Override
+                    public void onAnimationUpdate(@NonNull ValueAnimator animation) {
+                        Log.e("HUTAO", view.getClass().getName() + " " + view.getLayerType() + " suggestEmojiPanel");
+                    }
+                });
+                anim.start();
             }
         }
 
@@ -9500,10 +9518,14 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
         thisTagSelector.dismissWindow();
         if (thisTagSelector.getReactionsWindow() != null && thisTagSelector.getReactionsWindow().containerView != null) {
             thisTagSelector.getReactionsWindow().containerView.animate().alpha(0).setDuration(180).start();
+            View view = (View) thisTagSelector.getReactionsWindow().containerView;
+            Log.e("HUTAO", view.getClass().getName() + " " + view.getLayerType() + " thisTagSelector.getReactionsWindow().containerView");
         }
         thisTagSelector.animate().alpha(0.01f).translationY(-dp(12)).scaleX(.7f).scaleY(.7f).withEndAction(() -> {
             contentView.removeView(thisTagSelector);
         }).setDuration(180).start();
+        View view = (View) thisTagSelector;
+        Log.e("HUTAO", view.getClass().getName() + " " + view.getLayerType() + " thisTagSelector");
     }
 
     private ReactionsContainerLayout tagSelector;
@@ -9653,6 +9675,8 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
         tagSelector.setScaleY(.4f);
         tagSelector.setScaleX(.4f);
         tagSelector.animate().scaleY(1f).scaleX(1f).translationY(0).setDuration(420).setInterpolator(CubicBezierInterpolator.EASE_OUT_QUINT).start();
+        View view = (View) tagSelector;
+        Log.e("HUTAO", view.getClass().getName() + " " + view.getLayerType() + " tagSelector");
         updateSelectedMessageReactions();
         tagSelector.setTranslationY(contentPanTranslation + (actionBarSearchTags != null ? actionBarSearchTags.getCurrentHeight() : 0));
     }
@@ -9805,6 +9829,8 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
         searchOtherButton.animate().alpha(show ? 1f : 0f).withEndAction(() -> {
             searchOtherButton.setVisibility(show ? View.VISIBLE : View.GONE);
         }).setDuration(170).start();
+        View view = (View) searchOtherButton;
+        Log.e("HUTAO", view.getClass().getName() + " " + view.getLayerType() + " searchOtherButton");
     }
 
     public void onPageDownClicked() {
@@ -11022,7 +11048,8 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     fragmentView.invalidate();
                 }
             }).start();
-
+            View view = (View) blurredView;
+            Log.e("HUTAO", view.getClass().getName() + " " + view.getLayerType() + " blurredView");
             blurredView.setTag(1);
         } else if (!show && blurredView != null && blurredView.getTag() != null) {
             blurredView.animate().setListener(null).cancel();
@@ -11032,6 +11059,8 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             if (fragmentView != null) {
                 fragmentView.invalidate();
             }
+            View view = (View) blurredView;
+            Log.e("HUTAO", view.getClass().getName() + " " + view.getLayerType() + " blurredView");
         }
     }
 
@@ -11076,6 +11105,8 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 }
                 progressView.animate().setListener(null).cancel();
                 progressView.animate().alpha(1f).scaleX(1f).scaleY(1f).setDuration(150).start();
+                View view = (View) progressView;
+                Log.e("HUTAO", view.getClass().getName() + " " + view.getLayerType() + " progressView");
             } else {
                 progressView.animate().setListener(null).cancel();
                 progressView.animate().alpha(0).scaleX(0.3f).scaleY(0.3f).setDuration(150).setListener(new AnimatorListenerAdapter() {
@@ -11084,6 +11115,8 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                         progressView.setVisibility(View.INVISIBLE);
                     }
                 }).start();
+                View view = (View) progressView;
+                Log.e("HUTAO", view.getClass().getName() + " " + view.getLayerType() + " progressView");
             }
         } else {
             animateProgressViewTo = show;
@@ -14393,9 +14426,17 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     if (showTapForForwardingOptionsHit) {
                         replyObjectTextView.animate().alpha(0f).scaleX(0.98f).scaleY(0.98f).setDuration(150).start();
                         replyObjectHintTextView.animate().alpha(1f).scaleX(1f).scaleY(1f).setDuration(150).start();
+                        View view = (View) replyObjectTextView;
+                        Log.e("HUTAO", view.getClass().getName() + " " + view.getLayerType() + " replyObjectTextView");
+                        view = (View) replyObjectHintTextView;
+                        Log.e("HUTAO", view.getClass().getName() + " " + view.getLayerType() + " replyObjectHintTextView");
                     } else {
                         replyObjectTextView.animate().alpha(1f).scaleX(1f).scaleY(1f).setDuration(150).start();
                         replyObjectHintTextView.animate().alpha(0f).scaleX(0.98f).scaleY(0.98f).setDuration(150).start();
+                        View view = (View) replyObjectTextView;
+                        Log.e("HUTAO", view.getClass().getName() + " " + view.getLayerType() + " replyObjectTextView");
+                        view = (View) replyObjectHintTextView;
+                        Log.e("HUTAO", view.getClass().getName() + " " + view.getLayerType() + " replyObjectHintTextView");
                     }
                     AndroidUtilities.runOnUIThread(tapForForwardingOptionsHitRunnable, 6000);
                 }, 6000);
@@ -22253,6 +22294,8 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                                 if (openAnimationStartTime != 0 && item.getVisibility() != View.VISIBLE) {
                                     item.setAlpha(0f);
                                     item.animate().alpha(1f).setDuration(160).setInterpolator(CubicBezierInterpolator.EASE_IN).setStartDelay(50).start();
+                                    View view = (View) item;
+                                    Log.e("HUTAO", view.getClass().getName() + " " + view.getLayerType() + " item");
                                 }
                                 audioCallIconItem.setVisibility(View.VISIBLE);
                             }
@@ -24823,6 +24866,8 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
         if (searchExpandList != null) {
             searchExpandList.setClickable(count > 0);
             searchExpandList.animate().alpha(count > 0 ? 1f : 0.5f).start();
+            View view = (View) searchExpandList;
+            Log.e("HUTAO", view.getClass().getName() + " " + view.getLayerType() + " searchExpandList");
         }
     }
 
@@ -25669,6 +25714,14 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             if (isInsideContainer) {
                 anim.translationY(0);
             }
+            View view = (View) searchContainer;
+            Log.e("HUTAO", view.getClass().getName() + " " + view.getLayerType() + " searchContainer");
+            anim.setUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(@NonNull ValueAnimator animation) {
+                    Log.e("HUTAO", view.getClass().getName() + " " + view.getLayerType() + " searchContainer");
+                }
+            });
             anim.start();
 
             if (searchExpandAnimator != null) {
@@ -25727,6 +25780,14 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     if (isInsideContainer) {
                         anim.translationY(dp(searchContainerHeight));
                     }
+                    View view = (View) searchContainer;
+                    Log.e("HUTAO", view.getClass().getName() + " " + view.getLayerType() + " searchContainer");
+                    anim.setUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                        @Override
+                        public void onAnimationUpdate(@NonNull ValueAnimator animation) {
+                            Log.e("HUTAO", view.getClass().getName() + " " + view.getLayerType() + " searchContainer");
+                        }
+                    });
                     anim.setListener(new AnimatorListenerAdapter() {
                         @Override
                         public void onAnimationEnd(Animator animation) {
@@ -27639,7 +27700,17 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             suggestEmojiPanel.setVisibility(allowStickersPanel && !value && (chatActivityEnterView == null || !chatActivityEnterView.isStickersExpanded()) ? View.VISIBLE : View.GONE);
         }
         if (mentionContainer != null) {
-            mentionContainer.animate().alpha(chatActivityEnterView.isStickersExpanded() || isInPreviewMode() ? 0 : 1f).setInterpolator(CubicBezierInterpolator.DEFAULT).start();
+            ViewPropertyAnimator anim = mentionContainer.animate();
+            anim.alpha(chatActivityEnterView.isStickersExpanded() || isInPreviewMode() ? 0 : 1f).setInterpolator(CubicBezierInterpolator.DEFAULT);
+            View view = (View) mentionContainer;
+            Log.e("HUTAO", view.getClass().getName() + " " + view.getLayerType() + " mentionContainer");
+            anim.setUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(@NonNull ValueAnimator animation) {
+                    Log.e("HUTAO", view.getClass().getName() + " " + view.getLayerType() + " mentionContainer");
+                }
+            });
+            anim.start();
         }
         if (actionBar != null) {
             actionBar.setBackButtonDrawable(!value ? new BackDrawable(false) : null);
@@ -35302,7 +35373,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             return null;
         }
 
-        public void notifyDataSetChanged(boolean animated) {
+        public void notifyDataSetChanged(boolean animated) { // TODO
             if (BuildVars.LOGS_ENABLED) {
                 FileLog.d("notify data set changed fragmentOpened=" + fragmentOpened);
             }

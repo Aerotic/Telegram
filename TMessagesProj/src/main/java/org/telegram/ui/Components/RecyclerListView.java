@@ -29,6 +29,7 @@ import android.text.Layout;
 import android.text.SpannableStringBuilder;
 import android.text.StaticLayout;
 import android.text.TextPaint;
+import android.util.Log;
 import android.util.SparseIntArray;
 import android.util.StateSet;
 import android.view.HapticFeedbackConstants;
@@ -1953,6 +1954,7 @@ public class RecyclerListView extends RecyclerView {
         }
         if (emptyView != null) {
             emptyView.animate().setListener(null).cancel();
+            Log.e("HUTAO", emptyView.getClass().getName() + " " + emptyView.getLayerType());
         }
         emptyView = view;
         if (animateEmptyView && emptyView != null) {
@@ -2156,6 +2158,7 @@ public class RecyclerListView extends RecyclerView {
                         }
                     }
                     emptyView.animate().alpha(1f).scaleX(1).scaleY(1).setDuration(150).start();
+                    Log.e("HUTAO", emptyView.getClass().getName() + " " + emptyView.getLayerType());
                 } else {
                     if (emptyView.getVisibility() != GONE) {
                         ViewPropertyAnimator animator = emptyView.animate().alpha(0);
@@ -2170,6 +2173,7 @@ public class RecyclerListView extends RecyclerView {
                                 }
                             }
                         }).start();
+                        Log.e("HUTAO", emptyView.getClass().getName() + " " + emptyView.getLayerType());
                     }
                 }
             }
