@@ -22,6 +22,8 @@
 #include "rlottie.h"
 
 #include <fstream>
+#include <android/trace.h>
+#include <dlfcn.h>
 
 using namespace rlottie;
 
@@ -34,6 +36,39 @@ struct RenderTask {
     Surface               surface;
 };
 using SharedRenderTask = std::shared_ptr<RenderTask>;
+
+void *(*ATrace_beginSection) (const char* sectionName);
+void *(*ATrace_endSection) (void);
+void *(*ATrace_isEnabled) (void);
+
+typedef void *(*fp_ATrace_beginSection) (const char* sectionName);
+typedef void *(*fp_ATrace_endSection) (void);
+typedef void *(*fp_ATrace_isEnabled) (void);
+
+bool trace_init = false;
+
+void checkTraceInit() {
+    if (!trace_init) {
+        // Native Trace API is supported in API level 23
+        void *lib = dlopen("libandroid.so", RTLD_NOW | RTLD_LOCAL);
+        if (lib != NULL) {
+            //LOGI("Run with Trace Native API.");
+            // Retrieve function pointers from shared object.
+            ATrace_beginSection =
+                    reinterpret_cast<fp_ATrace_beginSection >(
+                            dlsym(lib, "ATrace_beginSection"));
+            ATrace_endSection =
+                    reinterpret_cast<fp_ATrace_endSection >(
+                            dlsym(lib, "ATrace_endSection"));
+            ATrace_isEnabled =
+                    reinterpret_cast<fp_ATrace_isEnabled >(
+                            dlsym(lib, "ATrace_isEnabled"));
+        }
+//        else {
+//        }
+        trace_init = true;
+    }
+}
 
 class AnimationImpl {
 public:
@@ -103,9 +138,14 @@ Surface AnimationImpl::render(size_t frameNo, const Surface &surface, bool clear
     }
 
     mRenderInProgress.store(true);
+    checkTraceInit();
+    ATrace_beginSection("AnimationImpl::render update");
     update(frameNo,
            VSize(surface.drawRegionWidth(), surface.drawRegionHeight()));
+    ATrace_endSection();
+    ATrace_beginSection("AnimationImpl::render render");
     mCompItem->render(surface, clear);
+    ATrace_endSection();
     mRenderInProgress.store(false);
     *result = true;
 
